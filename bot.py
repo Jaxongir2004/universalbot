@@ -24,7 +24,8 @@ kino_id_lugat = {
     "1234": 2,
     "241": 7,
     "242": 8,
-    "244": list(range(9, 76))
+    "244": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75]
+
 }
 
 # === Obunani tekshirish funksiyasi ===
@@ -43,9 +44,16 @@ async def send_movie(message: Message):
     kino_id = message.text.strip()
     if kino_id in kino_id_lugat:
         xabar_id = kino_id_lugat[kino_id]
-        await bot.copy_message(chat_id=message.chat.id, from_chat_id=MOVIE_CHANNEL, message_id=xabar_id)
+
+        if isinstance(xabar_id, list):
+            for msg_id in xabar_id:
+                await bot.copy_message(chat_id=message.chat.id, from_chat_id=MOVIE_CHANNEL, message_id=msg_id)
+        else:
+            await bot.copy_message(chat_id=message.chat.id, from_chat_id=MOVIE_CHANNEL, message_id=xabar_id)
+
     else:
         await message.reply("❌ Bunday kino topilmadi. Iltimos, boshqa kod kiriting!")
+
 
 # === /start komandasi ===
 @router.message(Command("start"))
