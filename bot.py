@@ -23,7 +23,8 @@ dp = Dispatcher()
 kino_id_lugat = {
     "1234": 2,
     "241": 7,
-    "242": 8
+    "242": 8,
+    "244": list(range(9, 76))
 }
 
 # === Obunani tekshirish funksiyasi ===
