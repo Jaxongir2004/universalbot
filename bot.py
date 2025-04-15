@@ -22,7 +22,7 @@ dp = Dispatcher()
 # Kino kodi va ularning xabar ID'lari
 kino_id_lugat = {
     "1234": 2,
-    "5678": 6
+    "241": 7
 }
 
 # === Obunani tekshirish funksiyasi ===
