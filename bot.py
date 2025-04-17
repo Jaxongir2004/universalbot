@@ -5,7 +5,7 @@ from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
 from dotenv import load_dotenv
-from flask import Flask, request
+from quart import Quart, request
 import asyncio
 
 # === Muhit o'zgaruvchilarni yuklash ===
@@ -79,11 +79,11 @@ async def handle_movie_request(message: Message):
     else:
         await message.answer("❌ Iltimos, obuna bo‘ling!")
 
-# === Flask server ===
-app = Flask(__name__)
+# === Quart server ===
+app = Quart(__name__)
 
 @app.route("/", methods=["GET"])
-def home():
+async def home():
     return "Bot ishlayapti!", 200
 
 @app.route(WEBHOOK_PATH, methods=["POST"])
