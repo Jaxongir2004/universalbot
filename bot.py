@@ -104,8 +104,16 @@ async def on_startup():
     await bot.set_webhook(WEBHOOK_URL)
     logging.info("✅ Webhook o‘rnatildi!")
 
+# === Webhookni yopish ===
+async def on_shutdown():
+    await bot.session.close()
+    logging.info("✅ Bot sessiyasi yopildi!")
+
 # === UWSGI ishga tushirish uchun ===
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     asyncio.run(on_startup())
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    try:
+        app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    finally:
+        asyncio.run(on_shutdown())
