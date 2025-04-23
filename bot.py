@@ -37,7 +37,8 @@ async def check_subscription(user_id: int) -> bool:
             member = await bot.get_chat_member(channel, user_id)
             if member.status not in ["member", "administrator", "creator"]:
                 return False
-        except:
+        except Exception as e:
+            logging.error(f"Obuna tekshirishda xato: {e}")
             return False
     return True
 
@@ -94,7 +95,7 @@ async def webhook():
         await dp.feed_update(bot, update)
         return "", 200
     except Exception as e:
-        print("Webhook error:", e)
+        logging.error(f"Webhook error: {e}")
         return "", 500
 
 # === Webhook o‘rnatish ===
