@@ -48,7 +48,7 @@ async def start_command(message: Message):
     if await check_subscription(message.from_user.id):
         await message.answer("✅ Obuna bor! Kod kiriting:")
     else:
-        buttons = InlineKeyboardMarkup(inline_keyboard=[
+        buttons = InlineKeyboardMarkup(inline_keyboard=[  
             [InlineKeyboardButton(text="📢 Kanalga obuna bo‘lish", url="https://t.me/FilmBoxApp")],
             [InlineKeyboardButton(text="✅ Tekshirish", callback_data="check")]
         ])
@@ -111,8 +111,8 @@ async def on_shutdown():
 # === Dastur ishga tushirish ===
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    asyncio.run(on_startup())
+    asyncio.run(on_startup())  # Webhookni o‘rnatish
     try:
-        app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+        app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))  # Quart serverini ishga tushirish
     finally:
-        asyncio.run(on_shutdown())
+        asyncio.run(on_shutdown())  # Shutdownda botni to‘xtatish
