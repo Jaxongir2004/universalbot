@@ -12,7 +12,7 @@ import asyncio
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_PATH = f"/webhook/{TOKEN}"
-WEBHOOK_URL = os.getenv("WEBHOOK_URL") + WEBHOOK_PATH  # https://yourapp.onrender.com/webhook/TOKEN
+WEBHOOK_URL = os.getenv("WEBHOOK_URL") + WEBHOOK_PATH  # Webhook URL ni olish
 MOVIE_CHANNEL = os.getenv("MOVIE_CHANNEL")
 SUBSCRIPTION_CHANNELS = [os.getenv("SUB_CHANNEL1")]
 
@@ -27,10 +27,10 @@ kino_id_lugat = {
     "1234": 2,
     "241": 7,
     "242": 8,
-    "244": list(range(9, 76))  # qisqartirilgan
+    "244": list(range(9, 76))  # Qisqartirilgan lug'at
 }
 
-# === Obuna tekshirish ===
+# === Obuna tekshirish funksiyasi ===
 async def check_subscription(user_id: int) -> bool:
     for channel in SUBSCRIPTION_CHANNELS:
         try:
@@ -63,7 +63,7 @@ async def check_subscription_callback(callback_query: types.CallbackQuery):
     else:
         await callback_query.answer("❌ Obuna hali yo‘q!", show_alert=True)
 
-# === Kino kodi qabul qilish ===
+# === Kino kodi bilan ishlash ===
 @router.message()
 async def handle_movie_request(message: Message):
     if await check_subscription(message.from_user.id):
@@ -95,21 +95,20 @@ async def webhook():
         await dp.feed_update(bot, update)
         return "", 200
     except Exception as e:
-        logging.error(f"Webhook error: {e}")
+        logging.error(f"Webhookda xato: {e}")
         return "", 500
 
-# === Webhook o‘rnatish ===
+# === Webhook o‘rnatish va yopish ===
 async def on_startup():
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_webhook(WEBHOOK_URL)
-    logging.info("✅ Webhook o‘rnatildi!")
+    logging.info("✅ Webhook muvaffaqiyatli o‘rnatildi!")
 
-# === Webhookni yopish ===
 async def on_shutdown():
     await bot.session.close()
     logging.info("✅ Bot sessiyasi yopildi!")
 
-# === UWSGI ishga tushirish uchun ===
+# === Dastur ishga tushirish ===
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     asyncio.run(on_startup())
