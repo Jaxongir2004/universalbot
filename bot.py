@@ -8,11 +8,11 @@ from dotenv import load_dotenv
 from quart import Quart, request
 import asyncio
 
-# === Muhit o'zgaruvchilarni yuklash ===
+# === Muhit o‘zgaruvchilarini yuklash ===
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_PATH = f"/webhook/{TOKEN}"
-WEBHOOK_URL = os.getenv("WEBHOOK_URL") + WEBHOOK_PATH  # Webhook URL ni olish
+WEBHOOK_URL = os.getenv("WEBHOOK_URL") + WEBHOOK_PATH
 MOVIE_CHANNEL = os.getenv("MOVIE_CHANNEL")
 SUBSCRIPTION_CHANNELS = [os.getenv("SUB_CHANNEL1")]
 
@@ -33,13 +33,14 @@ kino_id_lugat = {
 # === Obuna tekshirish funksiyasi ===
 async def check_subscription(user_id: int) -> bool:
     for channel in SUBSCRIPTION_CHANNELS:
-        try:
-            member = await bot.get_chat_member(channel, user_id)
-            if member.status not in ["member", "administrator", "creator"]:
+        if channel:  # Kanal mavjudligini tekshirish
+            try:
+                member = await bot.get_chat_member(channel, user_id)
+                if member.status not in ["member", "administrator", "creator"]:
+                    return False
+            except Exception as e:
+                logging.error(f"Obuna tekshirishda xato: {e}")
                 return False
-        except Exception as e:
-            logging.error(f"Obuna tekshirishda xato: {e}")
-            return False
     return True
 
 # === /start komandasi ===
@@ -48,7 +49,7 @@ async def start_command(message: Message):
     if await check_subscription(message.from_user.id):
         await message.answer("✅ Obuna bor! Kod kiriting:")
     else:
-        buttons = InlineKeyboardMarkup(inline_keyboard=[  
+        buttons = InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text="📢 Kanalga obuna bo‘lish", url="https://t.me/FilmBoxApp")],
             [InlineKeyboardButton(text="✅ Tekshirish", callback_data="check")]
         ])
@@ -91,6 +92,7 @@ async def home():
 async def webhook():
     try:
         request_data = await request.get_data()
+        logging.debug(f"Request data: {request_data.decode('utf-8')}")  # JSONni logga yozish
         update = types.Update.model_validate_json(request_data.decode("utf-8"))
         await dp.feed_update(bot, update)
         return "", 200
@@ -110,9 +112,12 @@ async def on_shutdown():
 
 # === Dastur ishga tushirish ===
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    asyncio.run(on_startup())  # Webhookni o‘rnatish
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
     try:
-        app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))  # Quart serverini ishga tushirish
+        loop.run_until_complete(on_startup())  # Webhookni o‘rnatish
+        app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))  # Quart serverni ishga tushirish
     finally:
-        asyncio.run(on_shutdown())  # Shutdownda botni to‘xtatish
+        loop.run_until_complete(on_shutdown())  # Loopni to‘g‘ri yopish
+        loop.close()
